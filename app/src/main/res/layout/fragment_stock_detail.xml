@@ -12,9 +12,64 @@
         android:layout_margin="16dp"
         android:textSize="20sp"/>
 
+    <!-- TAB LAYOUT -->
+    <android.support.design.widget.TabLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:id="@+id/curves_tabs"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="bottom"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp">
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tab_on_day"
+            android:text="@string/tab_one_day"/>
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tab_five_days"
+            android:text="@string/tab_five_days"/>
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tab_three_months"
+            android:text="@string/tab_three_months"/>
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tab_six_months"
+            android:text="@string/tab_six_months"/>
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tab_one_year"
+            android:text="@string/tab_one_year"/>
+
+        <android.support.design.widget.TabItem
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tab_five_years"
+            android:text="@string/tab_five_years"/>
+
+    </android.support.design.widget.TabLayout>
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/stock_chart"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="200dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginEnd="16dp"/>
 
 </LinearLayout>

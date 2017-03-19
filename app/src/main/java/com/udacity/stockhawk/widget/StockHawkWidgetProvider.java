@@ -46,6 +46,7 @@ public class StockHawkWidgetProvider extends AppWidgetProvider {
             //TODO: use a boolean for the tablet version
             //boolean useDetailActivity = context.getResources().getBoolean(R.bool.use_detail_activity);
             boolean useDetailActivity = true;
+
             Intent clickIntentTemplate = useDetailActivity
                     ? new Intent(context, DetailActivity.class).putExtra(Intent.EXTRA_TEXT, "FB")
                     : new Intent(context, MainActivity.class);

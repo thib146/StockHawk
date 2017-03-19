@@ -18,6 +18,13 @@
     <string name="default_stocks_microsoft">MSFT</string>
     <string name="default_stocks_facebook">FB</string>
 
+    <string name="tab_one_day">1D</string>
+    <string name="tab_five_days">5D</string>
+    <string name="tab_three_months">3M</string>
+    <string name="tab_six_months">6M</string>
+    <string name="tab_one_year">1Y</string>
+    <string name="tab_five_years">5Y</string>
+
 
     <string name="action_change_units">@string/pref_display_mode_key</string>
 
