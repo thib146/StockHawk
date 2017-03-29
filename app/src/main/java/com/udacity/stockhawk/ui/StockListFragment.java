@@ -147,7 +147,7 @@ public class StockListFragment extends Fragment implements
         }).attachToRecyclerView(stockRecyclerView);
 
         // Pass the Refresher to the Main Activity for the Add Stock function
-        //RefresherPass.onRefresherPass(swipeRefreshLayout);
+        RefresherPass.onRefresherPass(swipeRefreshLayout);
 
         return view;
     }

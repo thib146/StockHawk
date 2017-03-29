@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements
         if (symbol != null && !symbol.isEmpty()) {
 
             if (networkUp()) {
-                //mSwipeRefreshLayout.setRefreshing(true);
+                mSwipeRefreshLayout.setRefreshing(true);
             } else {
                 String message = getResources().getString(R.string.toast_stock_added_no_connectivity);
                 Toast.makeText(this, message, Toast.LENGTH_LONG).show();
