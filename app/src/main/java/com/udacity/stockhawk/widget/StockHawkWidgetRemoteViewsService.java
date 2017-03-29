@@ -5,12 +5,14 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.Binder;
 import android.os.Build;
+import android.os.Bundle;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
+import com.udacity.stockhawk.ui.DetailFragment;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -28,6 +30,7 @@ public class StockHawkWidgetRemoteViewsService extends RemoteViewsService {
     private DecimalFormat dollarFormatWithPlus;
     private DecimalFormat percentageFormat;
 
+    // Data projection used in the widget
     private static final String[] STOCK_COLUMNS = {
             Contract.Quote.COLUMN_SYMBOL,
             Contract.Quote.COLUMN_COMPANY,
@@ -42,6 +45,12 @@ public class StockHawkWidgetRemoteViewsService extends RemoteViewsService {
     private static final int INDEX_PERCENTAGE_CHANGE = 3;
     private static final int INDEX_ABSOLUTE_CHANGE = 4;
 
+    /**
+     * This function sets up each list item in the widget
+     *
+     * @param intent the intent used for the widget
+     * @return the items (views) created
+     */
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new RemoteViewsFactory() {
@@ -49,7 +58,6 @@ public class StockHawkWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public void onCreate() {
-
             }
 
             @Override
@@ -60,6 +68,7 @@ public class StockHawkWidgetRemoteViewsService extends RemoteViewsService {
 
                 final long identityToken = Binder.clearCallingIdentity();
 
+                // Get all the stock data from the Content Resolver
                 data = getContentResolver().query(Contract.Quote.URI, STOCK_COLUMNS, null,
                         null, Contract.Quote.COLUMN_SYMBOL + " ASC");
 
@@ -86,6 +95,7 @@ public class StockHawkWidgetRemoteViewsService extends RemoteViewsService {
                     return null;
                 }
 
+                // Used for the price, price change and percentage formatting
                 dollarFormat = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
                 dollarFormatWithPlus = (DecimalFormat) NumberFormat.getCurrencyInstance(Locale.US);
                 dollarFormatWithPlus.setPositivePrefix("+$");
@@ -94,14 +104,20 @@ public class StockHawkWidgetRemoteViewsService extends RemoteViewsService {
                 percentageFormat.setMinimumFractionDigits(2);
                 percentageFormat.setPositivePrefix("+");
 
-                RemoteViews views = new RemoteViews(getPackageName(),
-                        R.layout.widget_list_item);
+                // The list item that will be set up
+                RemoteViews views = new RemoteViews(getPackageName(), R.layout.widget_list_item);
 
-                // Extract the weather data from the Cursor
+                // Extract the stock data from the Cursor
                 String symbol = data.getString(INDEX_SYMBOL);
                 String company = data.getString(INDEX_COMPANY);
                 String price = data.getString(INDEX_PRICE);
 
+                // Cut the company name when it's too long
+                if (company.length() > 20) {
+                    company = company.substring(0, 20) + "...";
+                }
+
+                // Get the price change and percentage values
                 float rawAbsoluteChange = data.getFloat(INDEX_ABSOLUTE_CHANGE);
                 float percentageChange = data.getFloat(INDEX_PERCENTAGE_CHANGE);
 
@@ -110,21 +126,24 @@ public class StockHawkWidgetRemoteViewsService extends RemoteViewsService {
                 views.setTextViewText(R.id.widget_item_stock_company_name, company);
                 views.setTextViewText(R.id.widget_item_price, price);
 
+                // Change the color of the price change/percentage depending on the sign
                 if (rawAbsoluteChange > 0) {
                     views.setInt(R.id.widget_item_change, "setBackgroundResource", R.drawable.percent_change_pill_green);
                 } else {
                     views.setInt(R.id.widget_item_change, "setBackgroundResource", R.drawable.percent_change_pill_red);
                 }
 
-                String change = dollarFormatWithPlus.format(rawAbsoluteChange);
-                String percentage = percentageFormat.format(percentageChange / 100);
+                String change = "\u200E" + dollarFormatWithPlus.format(rawAbsoluteChange); // \u200E added to keep the negative sign in RTL mode
+                String percentage = "\u200E" + percentageFormat.format(percentageChange / 100);
 
                 views.setTextViewText(R.id.widget_item_change, change);
 
                 final Intent fillInIntent = new Intent();
 
                 fillInIntent.setData(Contract.Quote.URI);
+                fillInIntent.putExtra(Intent.EXTRA_TEXT, symbol); // Add the symbol in the intent to open directly the right detailed view
                 views.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+
                 return views;
             }
 

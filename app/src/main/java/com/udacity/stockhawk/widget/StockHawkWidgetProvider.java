@@ -33,7 +33,7 @@ public class StockHawkWidgetProvider extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_detail);
 
             // Create an Intent to launch MainActivity
-            Intent intent = new Intent(context, MainActivity.class);
+            Intent intent = new Intent(context, MainActivity.class).putExtra(Intent.EXTRA_TEXT, "FB");
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
             views.setOnClickPendingIntent(R.id.widget, pendingIntent);
 
@@ -44,11 +44,10 @@ public class StockHawkWidgetProvider extends AppWidgetProvider {
                 setRemoteAdapterV11(context, views);
             }
             //TODO: use a boolean for the tablet version
-            //boolean useDetailActivity = context.getResources().getBoolean(R.bool.use_detail_activity);
-            boolean useDetailActivity = true;
+            boolean useDetailActivity = context.getResources().getBoolean(R.bool.isTablet);
 
-            Intent clickIntentTemplate = useDetailActivity
-                    ? new Intent(context, DetailActivity.class).putExtra(Intent.EXTRA_TEXT, "FB")
+            Intent clickIntentTemplate = !useDetailActivity
+                    ? new Intent(context, DetailActivity.class)
                     : new Intent(context, MainActivity.class);
             PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
                     .addNextIntentWithParentStack(clickIntentTemplate)

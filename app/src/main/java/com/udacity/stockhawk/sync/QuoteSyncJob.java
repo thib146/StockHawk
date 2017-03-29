@@ -71,7 +71,6 @@ public final class QuoteSyncJob {
             while (iterator.hasNext()) {
                 String symbol = iterator.next();
 
-
                 Stock stock = quotes.get(symbol);
                 StockQuote quote = stock.getQuote();
 
@@ -82,7 +81,7 @@ public final class QuoteSyncJob {
 
                 // WARNING! Don't request historical data for a stock that doesn't exist!
                 // The request will hang forever X_x
-                List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
+                List<HistoricalQuote> history = stock.getHistory(from, to, Interval.DAILY);
 
                 StringBuilder historyBuilder = new StringBuilder();
 
@@ -136,7 +135,6 @@ public final class QuoteSyncJob {
         scheduler.schedule(builder.build());
     }
 
-
     public static synchronized void initialize(final Context context) {
 
         schedulePeriodic(context);
@@ -164,7 +162,6 @@ public final class QuoteSyncJob {
             JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 
             scheduler.schedule(builder.build());
-
 
         }
     }

@@ -19,6 +19,9 @@ import java.util.Locale;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
+import static android.content.res.Configuration.ORIENTATION_PORTRAIT;
+
 class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
     private final Context context;
@@ -27,6 +30,9 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
     private final DecimalFormat percentageFormat;
     private Cursor cursor;
     private final StockAdapterOnClickHandler clickHandler;
+
+    int orientation;
+    boolean isTablet;
 
     // Global int for the position of an item
     public int adapterPosition;
@@ -60,6 +66,9 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
         View item = LayoutInflater.from(context).inflate(R.layout.list_item_quote, parent, false);
 
+        orientation = context.getResources().getConfiguration().orientation;
+        isTablet = context.getResources().getBoolean(R.bool.isTablet);
+
         return new StockViewHolder(item);
     }
 
@@ -69,8 +78,19 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
         cursor.moveToPosition(position);
 
         holder.symbol.setText(cursor.getString(Contract.Quote.POSITION_SYMBOL));
-        holder.companyName.setText(cursor.getString(Contract.Quote.POSITION_COMPANY));
-        holder.price.setText(dollarFormat.format(cursor.getFloat(Contract.Quote.POSITION_PRICE)));
+
+        // Shorten the Company name on phones and on Landscape mode on Phones
+        String companyNameStr = cursor.getString(Contract.Quote.POSITION_COMPANY);
+        if (orientation == ORIENTATION_LANDSCAPE && companyNameStr.length() > 10 && !isTablet) {
+            companyNameStr = companyNameStr.substring(0, 10) + "...";
+        } else if (orientation == ORIENTATION_PORTRAIT && companyNameStr.length() > 20 && !isTablet) {
+            companyNameStr = companyNameStr.substring(0, 20) + "...";
+        }
+        holder.companyName.setText(companyNameStr); // Add the company name under the Symbol
+
+        String priceStr = "\u200E" + dollarFormat.format(cursor.getFloat(Contract.Quote.POSITION_PRICE)); // \u200E is added to keep the negative sign even in RTL mode
+
+        holder.price.setText(priceStr);
 
         float rawAbsoluteChange = cursor.getFloat(Contract.Quote.POSITION_ABSOLUTE_CHANGE);
         float percentageChange = cursor.getFloat(Contract.Quote.POSITION_PERCENTAGE_CHANGE);
@@ -81,8 +101,8 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
             holder.change.setBackgroundResource(R.drawable.percent_change_pill_red);
         }
 
-        String change = dollarFormatWithPlus.format(rawAbsoluteChange);
-        String percentage = percentageFormat.format(percentageChange / 100);
+        String change = "\u200E" + dollarFormatWithPlus.format(rawAbsoluteChange); // \u200E is added to keep the negative sign even in RTL mode
+        String percentage = "\u200E" + percentageFormat.format(percentageChange / 100); // \u200E is added to keep the negative sign even in RTL mode
 
         if (PrefUtils.getDisplayMode(context)
                 .equals(context.getString(R.string.pref_display_mode_absolute_key))) {
@@ -110,17 +130,10 @@ class StockAdapter extends RecyclerView.Adapter<StockAdapter.StockViewHolder> {
 
     class StockViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.symbol)
-        TextView symbol;
-
-        @BindView(R.id.stock_company_name)
-        TextView companyName;
-
-        @BindView(R.id.price)
-        TextView price;
-
-        @BindView(R.id.change)
-        TextView change;
+        @BindView(R.id.symbol) TextView symbol;
+        @BindView(R.id.stock_company_name) TextView companyName;
+        @BindView(R.id.price) TextView price;
+        @BindView(R.id.change) TextView change;
 
         StockViewHolder(View itemView) {
             super(itemView);
